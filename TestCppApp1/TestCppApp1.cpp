@@ -1,15 +1,12 @@
-﻿// TestCppApp1.cpp : アプリケーションのエントリ ポイントを定義します。
-//
-
-#include "framework.h"
+﻿#include "framework.h"
 #include "TestCppApp1.h"
 
 #define MAX_LOADSTRING 100
 
 // グローバル変数:
-HINSTANCE hInst;                                // 現在のインターフェイス
-WCHAR szTitle[MAX_LOADSTRING];                  // タイトル バーのテキスト
-WCHAR szWindowClass[MAX_LOADSTRING];            // メイン ウィンドウ クラス名
+HINSTANCE hInst;
+WCHAR szTitle[MAX_LOADSTRING];
+WCHAR szWindowClass[MAX_LOADSTRING];
 
 // このコード モジュールに含まれる関数の宣言を転送します:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -17,15 +14,24 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+// ボタンのIDを定義
+#define IDC_MYBUTTON 101
+
+// メニュー項目のIDを定義
+#define IDM_ABOUT 104
+#define IDM_EXIT 105
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR    lpCmdLine,
+    _In_ int       nCmdShow)
+
+
 {
+    SetProcessDPIAware();
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-
-    // TODO: ここにコードを挿入してください。
 
     // グローバル文字列を初期化する
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -33,7 +39,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // アプリケーション初期化の実行:
-    if (!InitInstance (hInstance, nCmdShow))
+    if (!InitInstance(hInstance, nCmdShow))
     {
         return FALSE;
     }
@@ -52,104 +58,83 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
-    return (int) msg.wParam;
+    return (int)msg.wParam;
 }
 
-
-
-//
-//  関数: MyRegisterClass()
-//
-//  目的: ウィンドウ クラスを登録します。
-//
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
 
     wcex.cbSize = sizeof(WNDCLASSEX);
-
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_TESTCPPAPP1));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_TESTCPPAPP1);
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_TESTCPPAPP1));
+    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_TESTCPPAPP1);
+    wcex.lpszClassName = szWindowClass;
+    wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     return RegisterClassExW(&wcex);
 }
 
-//
-//   関数: InitInstance(HINSTANCE, int)
-//
-//   目的: インスタンス ハンドルを保存して、メイン ウィンドウを作成します
-//
-//   コメント:
-//
-//        この関数で、グローバル変数でインスタンス ハンドルを保存し、
-//        メイン プログラム ウィンドウを作成および表示します。
-//
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // グローバル変数にインスタンス ハンドルを格納する
+    hInst = hInstance; // グローバル変数にインスタンス ハンドルを格納する
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, 0, 400, 300, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
-   {
-      return FALSE;
-   }
+    if (!hWnd)
+    {
+        return FALSE;
+    }
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+    // ボタンの作成
+    CreateWindowW(L"BUTTON", L"クリック", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+        5, 5, 100, 30, hWnd, (HMENU)IDC_MYBUTTON, hInstance, nullptr);
 
-   return TRUE;
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
+
+    return TRUE;
 }
 
-//
-//  関数: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  目的: メイン ウィンドウのメッセージを処理します。
-//
-//  WM_COMMAND  - アプリケーション メニューの処理
-//  WM_PAINT    - メイン ウィンドウを描画する
-//  WM_DESTROY  - 中止メッセージを表示して戻る
-//
-//
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
     case WM_COMMAND:
+    {
+        int wmId = LOWORD(wParam);
+        if (wmId == IDC_MYBUTTON)  // ボタンがクリックされた場合
         {
-            int wmId = LOWORD(wParam);
-            // 選択されたメニューの解析:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
+            MessageBox(hWnd, L"ボタンがクリックされました！", L"クリック", MB_OK);
+        }
+        // メニュー項目の処理
+        switch (wmId)
+        {
+        case IDM_ABOUT:
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            break;
+        case IDM_EXIT:
+            DestroyWindow(hWnd);
+            break;
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
         }
         break;
+    }
     case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: HDC を使用する描画コードをここに追加してください...
-            EndPaint(hWnd, &ps);
-        }
-        break;
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+    }
+    break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -159,7 +144,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// バージョン情報ボックスのメッセージ ハンドラーです。
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);

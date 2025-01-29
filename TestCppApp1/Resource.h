@@ -15,6 +15,11 @@
 #define IDC_MYICON				2
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1
+#define VERSION_MAJOR    1
+#define VERSION_MINOR    1
+#define VERSION_BUILD    0
+#define VERSION_REVISION 0
+
 #endif
 // 新しいオブジェクトの次の既定値
 //
